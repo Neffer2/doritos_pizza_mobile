@@ -9,7 +9,6 @@ export class Tutorial extends Phaser.Scene {
     create ()
     {
         mContext = this;
-        mContext.scene.start('Game');
         let bg = this.add.image(0, 0, 'background_tutorial').setOrigin(0, 0);
         let title = this.add.image(width/2, (height/4), 'title');
         const fxShadow = title.preFX.addShadow(0, 0, 0.006, 2, 0x333333, 10);
