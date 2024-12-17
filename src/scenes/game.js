@@ -1,16 +1,14 @@
+const VELOCITY = 480;
 // Useful vars
 let width, height, mContext, floor, player, elemsFall = [],
-    arepaHuevo = ['huevo1', 'huevo2'],
-    arepaMq = ['mortadela', 'queso'],
-    arepaCarne = ['camaron', 'camaron1', 'carne', 'carne1'],
-    scoreText, elemsInterval;
+    scoreText, elemsInterval,
+    elemsKeys = ['dorito', 'burger'];
 
 // Movements
-let goRight = false, goLeft = false, leftBtn, rightBtn;
+let goRight = false, goLeft = false, leftBtn, rightBtn, jumpBtn, jump = false;
 
 // Filled
 let arepa;
-const AREPAVELOCITY = 480;
 
 export class Game extends Phaser.Scene {
     constructor ()
@@ -21,7 +19,7 @@ export class Game extends Phaser.Scene {
     create(){
         mContext = this;
         leftBtn.on('pointerdown', function(){
-            leftBtn.setScale(1.3);
+            leftBtn.setScale(1.1);
             goLeft = true;
         });
 
@@ -30,14 +28,14 @@ export class Game extends Phaser.Scene {
         });
 
         leftBtn.on('pointerout', () => {            
-            leftBtn.setScale(1.5); 
+            leftBtn.setScale(1); 
             goLeft = false;
         });
 
         // --------------------------------------
 
         rightBtn.on('pointerdown', function(){
-            rightBtn.setScale(1.3);
+            rightBtn.setScale(1.1);
             goRight = true;
         });
 
@@ -46,26 +44,25 @@ export class Game extends Phaser.Scene {
         });
 
         rightBtn.on('pointerout', () => {            
-            rightBtn.setScale(1.5); 
+            rightBtn.setScale(1); 
             goRight = false;
         });
 
-        this.physics.world.on('worldstep', () => {
-            player.setAngularVelocity(
-                Phaser.Math.RadToDeg(player.body.velocity.x / player.body.halfWidth)
-            );
+        // --------------------------------------
+
+        jumpBtn.on('pointerdown', function(){
+            jumpBtn.setScale(1.1);
+            jump = true;
         });
 
-        // Define Arepa Kind
-        let elemsKeys = [];
-        arepa = this.sys.settings.data.arepa;
-        if (arepa === 'arepa-huevo'){
-            elemsKeys = arepaHuevo;
-        }else if (arepa === 'arepa-carne'){
-            elemsKeys = arepaCarne;
-        }else if (arepa === 'arepa-mq'){
-            elemsKeys = arepaMq;
-        }
+        jumpBtn.on('pointerup', function(){
+            jump = false;
+        });
+
+        jumpBtn.on('pointerout', () => {            
+            jumpBtn.setScale(1); 
+            jump = false;
+        });
 
         // Elems Fall
         elemsInterval = setInterval(() => {
@@ -74,22 +71,55 @@ export class Game extends Phaser.Scene {
         }, 600);
 
         // Time
-        setTimeout(() => {
-            this.popUp();
-        }, 30000);
+        // setTimeout(() => {
+        //     this.popUp();
+        // }, 30000);
 
         // Colliders
         this.physics.add.collider(player, floor);
         this.physics.add.overlap(player, elemsFall, this.hitElem, null, this);
+
+        // Animations
+        player.anims.create({
+            key: 'iddle',
+            frames: this.anims.generateFrameNumbers('player_iddle', { start: 0, end: 6 }),
+            frameRate: 12,
+            repeat: -1
+        });
+        player.anims.play('iddle');
+
+        player.anims.create({
+            key: 'run',
+            frames: this.anims.generateFrameNumbers('player_run', { start: 0, end: 23 }),
+            frameRate: 30,
+            repeat: -1
+        });
+
+        player.anims.create({
+            key: 'jump',
+            frames: this.anims.generateFrameNumbers('player_jump', { start: 0, end: 1 }),
+            frameRate: 8,
+            repeat: 1
+        });
     }
 
     update(){
         if (goLeft){
-            player.setVelocityX(-AREPAVELOCITY);
+            player.setVelocityX(-VELOCITY);
+            if (player.body.touching.down){ player.anims.play('run', true); }
+            player.flipX = false;
         }else if (goRight){
-            player.setVelocityX(AREPAVELOCITY);
+            player.setVelocityX(VELOCITY);
+            if (player.body.touching.down){ player.anims.play('run', true); }
+            player.flipX = true;
         }else {
+            if (player.body.touching.down){player.anims.play('iddle', true);}
             player.setVelocityX(0);
+        }
+
+        if (jump && player.body.touching.down){
+            player.setVelocityY(-VELOCITY);
+            player.anims.play('jump', true);
         }
 
         elemsFall.forEach(elem => {
@@ -102,22 +132,23 @@ export class Game extends Phaser.Scene {
         height = this.game.config.height;
         
         this.add.image(0, 0, 'background').setOrigin(0);
-        this.add.image(20, 10, 'logo-pan').setScale(1.8).setOrigin(0);
         floor = this.physics.add.staticGroup();
         floor.create(15, (height - 190), '').setSize(width, 20).setOffset(0, 20).setAlpha(0.001);
 
-        leftBtn = this.add.image(250, height - 72, 'left-btn').setScale(1.5).setInteractive().setDepth(1);
-        rightBtn = this.add.image(leftBtn.x + 200, height - 72, 'right-btn').setScale(1.5).setInteractive().setDepth(1);
+        let livesBg = this.add.image((width/2), 80, 'lives-bg').setDepth(1);
+        let scoreBg = this.add.image((livesBg.x - 250), 80, 'score-bg').setDepth(1);
+        let timeBg = this.add.image((livesBg.x + 250), 80, 'time-bg').setDepth(1);
 
-        player = this.physics.add.sprite((width/2), height - 400, 'player', 0).setScale(.5);
-        player.setSize(270, 260, true);
+        scoreText = this.add.text((livesBg.x - 250), 58, '0', {font: '40px primary-font', fill: '#fff'}).setDepth(1);
+
+        leftBtn = this.add.image(110, height - 120, 'left-btn').setInteractive().setDepth(1);
+        rightBtn = this.add.image(leftBtn.x + 200, leftBtn.y, 'right-btn').setInteractive().setDepth(1);
+        jumpBtn = this.add.image(rightBtn.x + 280, leftBtn.y, 'jump-btn').setInteractive().setDepth(1);
+
+        player = this.physics.add.sprite((width/2), height - 400, 'player_iddle', 0).setScale(.5);
+        player.setSize(350, 620, true);
         player.score = 0;
         player.setCollideWorldBounds(true);
-
-        this.add.image(width - 160, 100, 'score').setDepth(1);
-        scoreText = this.add.text(width - 98, 80, '0', {font: '40px primary-font', fill: '#fff'}).setDepth(1);
-
-        arepa = this.sys.settings.data.arepa;
     }
 
     getRandomNumber(min, max){

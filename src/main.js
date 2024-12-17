@@ -22,7 +22,10 @@ const config = {
             // debug: true
         }
     },
+    input :{
+		activePointers: 3,
+    },
     backgroundColor: '#fff'
 };
- 
+  
 export const game = new Phaser.Game(config);

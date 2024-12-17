@@ -7,15 +7,22 @@ export class Preloader extends Phaser.Scene {
     preload ()
     {
         this.load.setPath('public/assets');
-        /* AREPAS */
-        this.load.image('player', './elems/arepa.png');
-        this.load.image('arepa-huevo', './elems/arepa-huevo.png');
-        this.load.image('arepa-carne', './elems/arepa-carne.png');
-        this.load.image('arepa-mq', './elems/arepa-mq.png');        
+        /* PLAYER */
+        this.load.spritesheet('player_iddle', './animaciones/player_iddle.png', { frameWidth: 450, frameHeight: 651.6 });
+        // this.load.spritesheet('player_run', './animaciones/player_run.png', { frameWidth: 450, frameHeight: 651.6 });
+        this.load.spritesheet('player_run', './animaciones/player_run.png', { frameWidth: 400, frameHeight: 800 });
+        this.load.spritesheet('player_jump', './animaciones/player_jump.png', { frameWidth: 303, frameHeight: 303 });
+
+        /* ELEMS */
+        this.load.image('background', './elems/bg.jpg');
+        this.load.image('score-bg', './elems/score_bg.png');
+        this.load.image('lives-bg', './elems/lives_bg.png');
+        this.load.image('time-bg', './elems/time_bg.png');
         
         /* BUTTONS */
         this.load.image('left-btn', './botones/left.png');
         this.load.image('right-btn', './botones/right.png');
+        this.load.image('jump-btn', './botones/jump.png');
         this.load.image('pause-btn', './botones/pause.png');
         this.load.image('resume-btn', './botones/resume.png');
         this.load.image('score', './botones/score.png');
@@ -23,21 +30,16 @@ export class Preloader extends Phaser.Scene {
         this.load.image('popUp', './botones/popUp.png');        
         this.load.image('volver', './botones/volver.png');        
 
-        /* ELEMS */
-        this.load.image('background', './elems/KITCHEN.png');
-        this.load.image('background_tutorial', './elems/bg_tutorial.jpg');
-        this.load.image('presentaciones', './elems/presentaciones.png');
-        this.load.image('presentaciones2', './elems/presentaciones2.png');
-        this.load.image('floor', './elems/FloorTwo.png');
-        this.load.image('huevo1', './elems/huevo1.png');
-        this.load.image('huevo2', './elems/huevo2.png');
-        this.load.image('mortadela', './elems/mortadela.png');
-        this.load.image('queso', './elems/queso.png');
-        this.load.image('camaron', './elems/camaron.png');
-        this.load.image('camaron1', './elems/camaron1.png');
-        this.load.image('carne', './elems/carne.png');
-        this.load.image('carne1', './elems/carne1.png');
-        this.load.image('logo-pan', './elems/pan.png');        
+        /* TUTORIAL */
+        this.load.image('background_tutorial', './tutorial/bg_tutorial.jpg');
+        this.load.image('aceptar-btn', './tutorial/aceptar_btn.png');
+        this.load.image('volver-btn', './tutorial/volver_btn.png');
+        this.load.image('title', './tutorial/title.png');
+        this.load.image('tutorial', './tutorial/tutorial.png');
+
+
+        this.load.image('burger', './elems/burger.png');
+        this.load.image('dorito', './elems/dorito.png');
     }
 
     create ()
