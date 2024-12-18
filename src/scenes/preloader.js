@@ -12,6 +12,8 @@ export class Preloader extends Phaser.Scene {
         // this.load.spritesheet('player_run', './animaciones/player_run.png', { frameWidth: 450, frameHeight: 651.6 });
         this.load.spritesheet('player_run', './animaciones/player_run.png', { frameWidth: 400, frameHeight: 800 });
         this.load.spritesheet('player_jump', './animaciones/player_jump.png', { frameWidth: 303, frameHeight: 303 });
+        this.load.spritesheet('player_fall', './animaciones/player_fall.png', { frameWidth: 900, frameHeight: 650 });
+        
 
         /* ELEMS */
         this.load.image('background', './elems/bg.jpg');
@@ -37,6 +39,9 @@ export class Preloader extends Phaser.Scene {
         this.load.image('title', './tutorial/title.png');
         this.load.image('tutorial', './tutorial/tutorial.png');
 
+        /* POPUP */
+        this.load.image('title-score', './popup/title_score.png');
+        this.load.image('title-footer', './popup/socore_footer.png');
 
         this.load.image('burger', './elems/burger.png');
         this.load.image('dorito', './elems/dorito.png');
@@ -44,6 +49,7 @@ export class Preloader extends Phaser.Scene {
 
     create ()
     {
-        this.scene.start('Tutorial');
+        this.scene.start('Game');
+        // this.scene.start('Tutorial');
     } 
 }

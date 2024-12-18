@@ -1,7 +1,7 @@
 const VELOCITY = 480;
 // Useful vars
 let width, height, mContext, floor, player, elemsFall = [],
-    scoreText, elemsInterval,
+    scoreText, liveText, timeText, elemsInterval, time, loose = false, gameOver = false,
     elemsKeys = ['dorito', 'burger'];
 
 // Movements
@@ -101,26 +101,35 @@ export class Game extends Phaser.Scene {
             frameRate: 8,
             repeat: 1
         });
+
+        player.anims.create({
+            key: 'fall',
+            frames: this.anims.generateFrameNumbers('player_fall', { start: 0, end: 11 }),
+            frameRate: 30,
+            repeat: 0
+        });
     }
 
     update(){
-        if (goLeft){
-            player.setVelocityX(-VELOCITY);
-            if (player.body.touching.down){ player.anims.play('run', true); }
-            player.flipX = false;
-        }else if (goRight){
-            player.setVelocityX(VELOCITY);
-            if (player.body.touching.down){ player.anims.play('run', true); }
-            player.flipX = true;
-        }else {
-            if (player.body.touching.down){player.anims.play('iddle', true);}
-            player.setVelocityX(0);
-        }
-
-        if (jump && player.body.touching.down){
-            player.setVelocityY(-VELOCITY);
-            player.anims.play('jump', true);
-        }
+        if (!loose){
+            if (goLeft){
+                player.setVelocityX(-VELOCITY);
+                if (player.body.touching.down){ player.anims.play('run', true); }
+                player.flipX = false;
+            }else if (goRight){
+                player.setVelocityX(VELOCITY);
+                if (player.body.touching.down){ player.anims.play('run', true); }
+                player.flipX = true;
+            }else {
+                if (player.body.touching.down){player.anims.play('iddle', true);}
+                player.setVelocityX(0);
+            }
+    
+            if (jump && player.body.touching.down){
+                player.setVelocityY(-VELOCITY);
+                player.anims.play('jump', true);
+            }
+        }  
 
         elemsFall.forEach(elem => {
             elem.setAngularVelocity(Phaser.Math.RadToDeg(elem.body.velocity.y / 225));         
@@ -135,12 +144,6 @@ export class Game extends Phaser.Scene {
         floor = this.physics.add.staticGroup();
         floor.create(15, (height - 190), '').setSize(width, 20).setOffset(0, 20).setAlpha(0.001);
 
-        let livesBg = this.add.image((width/2), 80, 'lives-bg').setDepth(1);
-        let scoreBg = this.add.image((livesBg.x - 250), 80, 'score-bg').setDepth(1);
-        let timeBg = this.add.image((livesBg.x + 250), 80, 'time-bg').setDepth(1);
-
-        scoreText = this.add.text((livesBg.x - 250), 58, '0', {font: '40px primary-font', fill: '#fff'}).setDepth(1);
-
         leftBtn = this.add.image(110, height - 120, 'left-btn').setInteractive().setDepth(1);
         rightBtn = this.add.image(leftBtn.x + 200, leftBtn.y, 'right-btn').setInteractive().setDepth(1);
         jumpBtn = this.add.image(rightBtn.x + 280, leftBtn.y, 'jump-btn').setInteractive().setDepth(1);
@@ -148,7 +151,16 @@ export class Game extends Phaser.Scene {
         player = this.physics.add.sprite((width/2), height - 400, 'player_iddle', 0).setScale(.5);
         player.setSize(350, 620, true);
         player.score = 0;
+        player.lives = 2;
         player.setCollideWorldBounds(true);
+
+        let livesBg = this.add.image((width/2), 80, 'lives-bg');
+        let scoreBg = this.add.image((livesBg.x - 250), 80, 'score-bg');
+        let timeBg = this.add.image((livesBg.x + 250), 80, 'time-bg');
+
+        liveText = this.add.text((width/2) + 20, 58, player.lives, {font: '40px primary-font', fill: '#fff'}).setDepth(1);
+        scoreText = this.add.text((livesBg.x - 250), 58, '0', {font: '40px primary-font', fill: '#fff'}).setDepth(1);
+        timeText = this.add.text((livesBg.x + 220), 58, '00:00', {font: '40px primary-font', fill: '#fff'}).setDepth(1);
     }
 
     getRandomNumber(min, max){
@@ -156,28 +168,50 @@ export class Game extends Phaser.Scene {
     }
 
     hitElem(player, elem){
-        player.score += 1;
-        scoreText.setText(player.score);
+        if (elem.texture.key === 'dorito' && !loose){
+            player.score += 1;
+            scoreText.setText(player.score);
+        }else {
+            loose = !loose;
+            if (player.lives == 0) { 
+                gameOver = true;
+                mContext.popUp();
+            }
+            player.lives -= 1;
+            liveText.setText(player.lives);
+            player.anims.play('fall', true);
+
+            setTimeout(() => {loose = !loose;}, 1000);
+        }
+
         elemsFall.splice(elemsFall.indexOf(elem), 1);
         elem.destroy();
     }
 
     popUp(){
         clearInterval(elemsInterval);
-        let popUp = this.add.image((width/2), (height/2), 'popUp').setScale(1.5).setDepth(1);
-        let title = this.add.text((width/2) - 230, (height/2) - 150, 'GANASTE', {font: '180px primary-font', fill: '#fff'}).setDepth(2);
-        let pts = this.add.text((width/2) - 70, (height/2) + 20, `${player.score} puntos`, {font: '50px primary-font', fill: '#fff'}).setDepth(2);
-        let volver = this.add.image((width/2) + 10, (height/2) + 220, 'volver').setScale(1.5).setInteractive().setDepth(2);
+        let bg = this.add.image(0, 0, 'background_tutorial').setOrigin(0, 0).setDepth(1);
+        let title = this.add.image(width/2, (height/4), 'title-score').setDepth(1);
+        const fxShadow = title.preFX.addShadow(0, 0, 0.006, 2, 0x333333, 10);
+        // let score = this.add.image(width/2, ((title.y + title.height) + 180), 'tutorial');
 
-        volver.on('pointerdown', function(){
-            volver.setScale(1.3);
-            setTimeout(() => {
-                window.location.reload();
-            }, 350);
+        let footer = this.add.image(width/2, (height - 100), 'title-footer').setDepth(1);
+
+        this.add.tween({
+            targets: title,
+            scale: 1.05,
+            duration: 800,
+            yoyo: true,
+            repeat: 1
         });
 
-        volver.on('pointerout', () => {            
-            volver.setScale(1.5); 
+        this.add.tween({
+            targets: fxShadow,
+            x: 2,
+            y: -2,
+            duration: 800,
+            yoyo: true,
+            repeat: 1
         });
     }
 }   
