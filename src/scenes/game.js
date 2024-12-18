@@ -91,7 +91,7 @@ export class Game extends Phaser.Scene {
         player.anims.create({
             key: 'run',
             frames: this.anims.generateFrameNumbers('player_run', { start: 0, end: 23 }),
-            frameRate: 30,
+            frameRate: 10,
             repeat: -1
         });
 
