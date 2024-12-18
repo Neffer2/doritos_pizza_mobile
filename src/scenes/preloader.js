@@ -8,11 +8,11 @@ export class Preloader extends Phaser.Scene {
     {
         this.load.setPath('public/assets');
         /* PLAYER */
-        this.load.spritesheet('player_iddle', './animaciones/player_iddle.png', { frameWidth: 450, frameHeight: 651.6 });
+        this.load.spritesheet('player_iddle', './animaciones/player_iddle.png', { frameWidth: 389, frameHeight: 779 });
         // this.load.spritesheet('player_run', './animaciones/player_run.png', { frameWidth: 450, frameHeight: 651.6 });
-        this.load.spritesheet('player_run', './animaciones/player_run.png', { frameWidth: 400, frameHeight: 800 });
-        this.load.spritesheet('player_jump', './animaciones/player_jump.png', { frameWidth: 303, frameHeight: 303 });
-        this.load.spritesheet('player_fall', './animaciones/player_fall.png', { frameWidth: 900, frameHeight: 650 });
+        this.load.spritesheet('player_run', './animaciones/player_run.png', { frameWidth: 389, frameHeight: 779 });
+        this.load.spritesheet('player_jump', './animaciones/player_jump.png', { frameWidth: 389, frameHeight: 779 });
+        this.load.spritesheet('player_fall', './animaciones/player_fall.png', { frameWidth: 893, frameHeight: 779 });
         
 
         /* ELEMS */
