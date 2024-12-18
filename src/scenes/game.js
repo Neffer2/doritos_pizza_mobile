@@ -66,7 +66,7 @@ export class Game extends Phaser.Scene {
 
         // Elems Fall
         elemsInterval = setInterval(() => {
-            let elem = this.physics.add.sprite(Phaser.Math.Between(20, (width - 20)), 0, elemsKeys[this.getRandomNumber(0, elemsKeys.length)]).setScale(.6);
+            let elem = this.physics.add.sprite(Phaser.Math.Between(20, (width - 20)), 0, elemsKeys[this.getRandomNumber(0, elemsKeys.length)]).setScale(.8);
             elemsFall.push(elem);
         }, 600);
 
@@ -89,9 +89,16 @@ export class Game extends Phaser.Scene {
         player.anims.play('iddle');
 
         player.anims.create({
-            key: 'run',
-            frames: this.anims.generateFrameNumbers('player_run', { start: 0, end: 23 }),
-            frameRate: 10,
+            key: 'run_left',
+            frames: this.anims.generateFrameNumbers('player_run_left', { start: 0, end: 11 }),
+            frameRate: 15,
+            repeat: -1
+        });
+
+        player.anims.create({
+            key: 'run_right',
+            frames: this.anims.generateFrameNumbers('player_run_right', { start: 0, end: 11 }),
+            frameRate: 15,
             repeat: -1
         });
 
@@ -114,12 +121,14 @@ export class Game extends Phaser.Scene {
         if (!loose){
             if (goLeft){
                 player.setVelocityX(-VELOCITY);
-                if (player.body.touching.down){ player.anims.play('run', true); }
-                player.flipX = false;
+                if (player.body.touching.down){ player.anims.play('run_left', true); }
+
+                if (!player.body.touching.down){ player.flipX = false; }
             }else if (goRight){
                 player.setVelocityX(VELOCITY);
-                if (player.body.touching.down){ player.anims.play('run', true); }
-                player.flipX = true;
+                if (player.body.touching.down){ player.anims.play('run_right', true);}
+
+                if (!player.body.touching.down){ player.flipX = true; }
             }else {
                 if (player.body.touching.down){player.anims.play('iddle', true);}
                 player.setVelocityX(0);
@@ -127,8 +136,7 @@ export class Game extends Phaser.Scene {
     
             if (jump && player.body.touching.down){
                 player.setVelocityY(-VELOCITY);
-                player.anims.play('jump', true);
-            }
+                player.anims.play('jump', true);            }
         }  
 
         elemsFall.forEach(elem => {
