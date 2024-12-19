@@ -12,8 +12,7 @@ export class Preloader extends Phaser.Scene {
         this.load.spritesheet('player_run_left', './animaciones/player_run_left.png', { frameWidth: 389, frameHeight: 779 });
         this.load.spritesheet('player_run_right', './animaciones/player_run_right.png', { frameWidth: 389, frameHeight: 779 });
         this.load.spritesheet('player_jump', './animaciones/player_jump.png', { frameWidth: 389, frameHeight: 779 });
-        this.load.spritesheet('player_fall', './animaciones/player_fall.png', { frameWidth: 893, frameHeight: 779 });
-        
+        this.load.spritesheet('player_fall', './animaciones/player_fall.png', { frameWidth: 893, frameHeight: 779 });        
 
         /* ELEMS */
         this.load.image('background', './elems/bg.jpg');

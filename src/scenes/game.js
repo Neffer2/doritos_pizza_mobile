@@ -67,6 +67,7 @@ export class Game extends Phaser.Scene {
         // Elems Fall
         elemsInterval = setInterval(() => {
             let elem = this.physics.add.sprite(Phaser.Math.Between(20, (width - 20)), 0, elemsKeys[this.getRandomNumber(0, elemsKeys.length)]).setScale(.8);
+            elem.setSize(0, 20, true);
             elemsFall.push(elem);
         }, 600);
 
@@ -77,7 +78,7 @@ export class Game extends Phaser.Scene {
 
         // Colliders
         this.physics.add.collider(player, floor);
-        this.physics.add.overlap(player, elemsFall, this.hitElem, null, this);
+        this.physics.add.collider(player, elemsFall, this.hitElem, null, this);
 
         // Animations
         player.anims.create({
@@ -104,7 +105,7 @@ export class Game extends Phaser.Scene {
 
         player.anims.create({
             key: 'jump',
-            frames: this.anims.generateFrameNumbers('player_jump', { start: 0, end: 1 }),
+            frames: this.anims.generateFrameNumbers('player_jump', { start: 0, end: 0 }),
             frameRate: 8,
             repeat: 1
         });
@@ -122,21 +123,23 @@ export class Game extends Phaser.Scene {
             if (goLeft){
                 player.setVelocityX(-VELOCITY);
                 if (player.body.touching.down){ player.anims.play('run_left', true); }
-
-                if (!player.body.touching.down){ player.flipX = false; }
             }else if (goRight){
                 player.setVelocityX(VELOCITY);
                 if (player.body.touching.down){ player.anims.play('run_right', true);}
 
                 if (!player.body.touching.down){ player.flipX = true; }
             }else {
-                if (player.body.touching.down){player.anims.play('iddle', true);}
+                if (player.body.touching.down){
+                    player.anims.play('iddle', true);
+                    player.flipX = false;
+                }
                 player.setVelocityX(0);
             }
     
             if (jump && player.body.touching.down){
                 player.setVelocityY(-VELOCITY);
-                player.anims.play('jump', true);            }
+                player.anims.play('jump', true);           
+            }
         }  
 
         elemsFall.forEach(elem => {
@@ -157,7 +160,9 @@ export class Game extends Phaser.Scene {
         jumpBtn = this.add.image(rightBtn.x + 280, leftBtn.y, 'jump-btn').setInteractive().setDepth(1);
 
         player = this.physics.add.sprite((width/2), height - 400, 'player_iddle', 0).setScale(.5);
-        player.setSize(350, 620, true);
+        player.setSize(300, 620, true).setOffset(40, 150);
+        player.body.checkCollision.left = false;            
+        player.body.checkCollision.right = false;            
         player.score = 0;
         player.lives = 2;
         player.setCollideWorldBounds(true);
@@ -201,7 +206,14 @@ export class Game extends Phaser.Scene {
         let bg = this.add.image(0, 0, 'background_tutorial').setOrigin(0, 0).setDepth(1);
         let title = this.add.image(width/2, (height/4), 'title-score').setDepth(1);
         const fxShadow = title.preFX.addShadow(0, 0, 0.006, 2, 0x333333, 10);
-        // let score = this.add.image(width/2, ((title.y + title.height) + 180), 'tutorial');
+
+        let scoreText1 = "LLEVAS \n ";
+        let scoreText2 = "\n PUNTOS";
+
+        const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
+        let score1 = this.add.text((width/2), (height/2), scoreText1, {font: '80px primary-font', fill: '#fff', align: "center"}).setOrigin(0.5).setDepth(1);
+        let score = this.add.text((width/2), (height/2) + 160,  player.score, {font: '400px primary-font', fill: '#fff', align: "center"}).setOrigin(0.5).setDepth(1);
+        let score2 = this.add.text((width/2), (height/2) + 320, scoreText2, {font: '80px primary-font', fill: '#fff', align: "center"}).setOrigin(0.5).setDepth(1);
 
         let footer = this.add.image(width/2, (height - 100), 'title-footer').setDepth(1);
 
