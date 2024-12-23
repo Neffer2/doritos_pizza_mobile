@@ -1,7 +1,7 @@
 const VELOCITY = 480;
 // Useful vars
 let width, height, mContext, floor, player, elemsFall = [],
-    scoreText, liveText, timeText, elemsInterval, time, loose = false, gameOver = false,
+    scoreText, liveText, timeText, elemsInterval, time = 60, timeInterval, loose = false, gameOver = false,
     elemsKeys = ['dorito', 'burger'];
 
 // Movements
@@ -64,6 +64,20 @@ export class Game extends Phaser.Scene {
             jump = false;
         });
 
+        // TIME
+        timeInterval = setInterval(() => {
+            time -= 1;
+            let minutes = Math.floor(time / 60);
+            let seconds = time % 60;
+            timeText.setText(minutes + '0:' + (seconds < 10 ? '0' + seconds : seconds));
+            if (time <= 0){
+                clearInterval(timeInterval);
+                clearInterval(elemsInterval);
+                gameOver = true;
+                mContext.popUp();
+            }
+        }, 1000);
+
         // Elems Fall
         elemsInterval = setInterval(() => {
             let elem = this.physics.add.sprite(Phaser.Math.Between(20, (width - 20)), 0, elemsKeys[this.getRandomNumber(0, elemsKeys.length)]).setScale(.8);
@@ -71,36 +85,31 @@ export class Game extends Phaser.Scene {
             elemsFall.push(elem);
         }, 600);
 
-        // Time
-        // setTimeout(() => {
-        //     this.popUp();
-        // }, 30000);
-
         // Colliders
         this.physics.add.collider(player, floor);
-        this.physics.add.collider(player, elemsFall, this.hitElem, null, this);
+        this.physics.add.overlap(player, elemsFall, this.hitElem, null, this);
 
         // Animations
         player.anims.create({
             key: 'iddle',
             frames: this.anims.generateFrameNumbers('player_iddle', { start: 0, end: 6 }),
             frameRate: 12,
-            repeat: -1
+            repeat: 1
         });
-        player.anims.play('iddle');
+        // player.anims.play('iddle');
 
         player.anims.create({
             key: 'run_left',
             frames: this.anims.generateFrameNumbers('player_run_left', { start: 0, end: 11 }),
             frameRate: 15,
-            repeat: -1
+            repeat: 1
         });
 
         player.anims.create({
             key: 'run_right',
             frames: this.anims.generateFrameNumbers('player_run_right', { start: 0, end: 11 }),
             frameRate: 15,
-            repeat: -1
+            repeat: 1
         });
 
         player.anims.create({
