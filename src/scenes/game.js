@@ -96,7 +96,6 @@ export class Game extends Phaser.Scene {
             frameRate: 12,
             repeat: 1
         });
-        // player.anims.play('iddle');
 
         player.anims.create({
             key: 'run_left',
@@ -176,13 +175,13 @@ export class Game extends Phaser.Scene {
         player.lives = 2;
         player.setCollideWorldBounds(true);
 
-        let livesBg = this.add.image((width/2), 80, 'lives-bg');
-        let scoreBg = this.add.image((livesBg.x - 250), 80, 'score-bg');
-        let timeBg = this.add.image((livesBg.x + 250), 80, 'time-bg');
+        let livesBg = this.add.image((width/2), 80, 'lives-bg').setDepth(1);
+        let scoreBg = this.add.image((livesBg.x - 250), 80, 'score-bg').setDepth(1);
+        let timeBg = this.add.image((livesBg.x + 250), 80, 'time-bg').setDepth(1);
 
         liveText = this.add.text((width/2) + 20, 58, player.lives, {font: '40px primary-font', fill: '#fff'}).setDepth(1);
         scoreText = this.add.text((livesBg.x - 250), 58, '0', {font: '40px primary-font', fill: '#fff'}).setDepth(1);
-        timeText = this.add.text((livesBg.x + 220), 58, '00:00', {font: '40px primary-font', fill: '#fff'}).setDepth(1);
+        timeText = this.add.text((livesBg.x + 200), 58, '00:00', {font: '40px primary-font', fill: '#fff'}).setDepth(1);
     }
 
     getRandomNumber(min, max){
