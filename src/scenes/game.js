@@ -220,8 +220,8 @@ export class Game extends Phaser.Scene {
 
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
         let score1 = this.add.text((width/2), (height/2), scoreText1, {font: '80px primary-font', fill: '#fff', align: "center"}).setOrigin(0.5).setDepth(1);
-        let score = this.add.text((width/2), (height/2) + 160,  player.score, {font: '400px primary-font', fill: '#fff', align: "center"}).setOrigin(0.5).setDepth(1);
-        let score2 = this.add.text((width/2), (height/2) + 320, scoreText2, {font: '80px primary-font', fill: '#fff', align: "center"}).setOrigin(0.5).setDepth(1);
+        let score = this.add.text((width/2), ((height/2) + 150),  player.score, {font: '400px primary-font', fill: '#fff', align: "center"}).setOrigin(0.5).setDepth(1);
+        let score2 = this.add.text(((width/2) - 30), ((score.y) + 180), scoreText2, {font: '80px primary-font', fill: '#00cb9b', align: "center"}).setOrigin(0.5).setDepth(1);
 
         let footer = this.add.image(width/2, (height - 100), 'title-footer').setDepth(1);
 
