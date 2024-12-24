@@ -190,17 +190,20 @@ export class Game extends Phaser.Scene {
 
     hitElem(player, elem){
         if (elem.texture.key === 'dorito' && !loose){
-            player.score += 1;
-            scoreText.setText(player.score);
+            player.score += 5;
+            scoreText.setText(player.score+" PTS");
         }else {
             loose = !loose;
+            player.lives -= 1;
+            liveText.setText(player.lives);
+            player.score = ((player.score - 10) <= 0) ? 0 : player.score -= 10;
+            scoreText.setText(player.score+" PTS");
+            player.anims.play('fall', true);
+
             if (player.lives == 0) { 
                 gameOver = true;
                 mContext.popUp();
             }
-            player.lives -= 1;
-            liveText.setText(player.lives);
-            player.anims.play('fall', true);
 
             setTimeout(() => {loose = !loose;}, 1000);
         }
