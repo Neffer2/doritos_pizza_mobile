@@ -172,7 +172,7 @@ export class Game extends Phaser.Scene {
         player.body.checkCollision.left = false;            
         player.body.checkCollision.right = false;            
         player.score = 0;
-        player.lives = 2;
+        player.lives = 3;
         player.setCollideWorldBounds(true);
 
         let livesBg = this.add.image((width/2), 80, 'lives-bg').setDepth(1);
@@ -180,7 +180,7 @@ export class Game extends Phaser.Scene {
         let timeBg = this.add.image((livesBg.x + 250), 80, 'time-bg').setDepth(1);
 
         liveText = this.add.text((width/2) + 20, 58, player.lives, {font: '40px primary-font', fill: '#fff'}).setDepth(1);
-        scoreText = this.add.text((livesBg.x - 250), 58, '0', {font: '40px primary-font', fill: '#fff'}).setDepth(1);
+        scoreText = this.add.text((livesBg.x - 300), 58, '0 PTS', {font: '40px primary-font', fill: '#fff'}).setDepth(1);
         timeText = this.add.text((livesBg.x + 200), 58, '00:00', {font: '40px primary-font', fill: '#fff'}).setDepth(1);
     }
 
@@ -192,11 +192,12 @@ export class Game extends Phaser.Scene {
         if (elem.texture.key === 'dorito' && !loose){
             player.score += 5;
             scoreText.setText(player.score+" PTS");
-        }else {
+        }else if(!loose) {
             loose = !loose;
-            player.lives -= 1;
+            player.lives -= 1;        
             liveText.setText(player.lives);
             player.score = ((player.score - 10) <= 0) ? 0 : player.score -= 10;
+
             scoreText.setText(player.score+" PTS");
             player.anims.play('fall', true);
 
@@ -205,7 +206,13 @@ export class Game extends Phaser.Scene {
                 mContext.popUp();
             }
 
-            setTimeout(() => {loose = !loose;}, 1000);
+            setTimeout(() => {loose = !loose;}, 2000);
+        }
+
+        if (player.score > 9 && player.score < 100) {
+            scoreText.x = (50);
+        }else if (player.score > 99) {
+            scoreText.x = (35);
         }
 
         elemsFall.splice(elemsFall.indexOf(elem), 1);
@@ -213,7 +220,9 @@ export class Game extends Phaser.Scene {
     }
 
     popUp(){
+        clearInterval(timeInterval);
         clearInterval(elemsInterval);
+        mContext.deleteElems();
         let bg = this.add.image(0, 0, 'background_tutorial').setOrigin(0, 0).setDepth(1);
         let title = this.add.image(width/2, (height/4), 'title-score').setDepth(1);
         const fxShadow = title.preFX.addShadow(0, 0, 0.006, 2, 0x333333, 10);
@@ -243,6 +252,12 @@ export class Game extends Phaser.Scene {
             duration: 800,
             yoyo: true,
             repeat: 1
+        });
+    }
+
+    deleteElems(){
+        elemsFall.forEach(elem => {
+            elem.disableBody(false, false);
         });
     }
 }   
